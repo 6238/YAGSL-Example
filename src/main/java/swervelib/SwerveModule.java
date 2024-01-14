@@ -110,7 +110,7 @@ public class SwerveModule
     // Config angle motor/controller
     angleMotor.configureIntegratedEncoder(moduleConfiguration.conversionFactors.angle);
     angleMotor.configurePIDF(moduleConfiguration.anglePIDF);
-    angleMotor.configurePIDWrapping(0, 90);
+    angleMotor.configurePIDWrapping(0, 180);
     angleMotor.setInverted(moduleConfiguration.angleMotorInverted);
     angleMotor.setMotorBrake(false);
 
@@ -174,7 +174,7 @@ public class SwerveModule
    */
   public void setDesiredState(SwerveModuleState desiredState, boolean isOpenLoop, boolean force)
   {
-    desiredState = SwerveModuleState.optimize(desiredState, lastState.angle);
+    desiredState = SwerveModuleState.optimize(desiredState, Rotation2d.fromDegrees(getAbsolutePosition()));
 
     if (isOpenLoop)
     {
@@ -196,8 +196,10 @@ public class SwerveModule
         cosineScalar = 0.0;
       }
 
-      double velocity = desiredState.speedMetersPerSecond * (cosineScalar);
-      driveMotor.setReference(velocity, 0);
+      if (desiredState.speedMetersPerSecond != lastState.speedMetersPerSecond) {
+        double velocity = desiredState.speedMetersPerSecond;// * (cosineScalar);
+        driveMotor.setReference(velocity, feedforward.calculate(velocity));
+      }
     }
 
     /* // Not necessary anymore.

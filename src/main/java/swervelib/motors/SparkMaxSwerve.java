@@ -361,13 +361,17 @@ public class SparkMaxSwerve extends SwerveMotor
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
-                                ControlType.kVelocity));
+                                ControlType.kVelocity,
+                                pidSlot,
+                                feedforward));
     } else
     {
       configureSparkMax(() ->
                             pid.setReference(
                                 setpoint,
-                                ControlType.kPosition));
+                                ControlType.kPosition,
+                                pidSlot,
+                                feedforward));
       if(SwerveDriveTelemetry.isSimulation)
       {
         encoder.setPosition(setpoint);
